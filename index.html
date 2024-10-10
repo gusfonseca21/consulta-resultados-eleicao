@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Consulta candidato</title>
+    <link rel="stylesheet" type="text/css" href="index.css" />
+  </head>
+  <body>
+    <div class="painel">
+      <div class="seletores">
+        <select
+          class="seletor-candidatura"
+          default=""
+          name="candidatura"
+          id="candidatura"
+        >
+          <option value="">Escolha o tipo de candidatura</option>
+          <option value="c0011">PREFEITO</option>
+          <option value="c0013">VEREADOR</option>
+        </select>
+        <select
+          disabled
+          class="seletor-estado"
+          default=""
+          name="estado"
+          id="estado"
+        >
+          <option value="">Escolha o Estado</option>
+          <option value="ac">ACRE</option>
+          <option value="al">ALAGOAS</option>
+          <option value="ap">AMAPÁ</option>
+          <option value="am">AMAZONAS</option>
+          <option value="ba">BAHIA</option>
+          <option value="ce">CEARÁ</option>
+          <option value="es">ESPÍRITO SANTO</option>
+          <option value="go">GOIÁS</option>
+          <option value="ma">MARANHÃO</option>
+          <option value="mt">MATO GROSSO</option>
+          <option value="ms">MATO GROSSO DO SUL</option>
+          <option value="mg">MINAS GERAIS</option>
+          <option value="pa">PARÁ</option>
+          <option value="pb">PARAÍBA</option>
+          <option value="pr">PARANÁ</option>
+          <option value="pe">PERNAMBUCO</option>
+          <option value="pi">PIAUÍ</option>
+          <option value="rj">RIO DE JANEIRO</option>
+          <option value="rn">RIO GRANDE DO NORTE</option>
+          <option value="rs">RIO GRANDE DO SUL</option>
+          <option value="ro">RONDÔNIA</option>
+          <option value="rr">RORAIMA</option>
+          <option value="sc">SANTA CATARINA</option>
+          <option value="sp">SÃO PAULO</option>
+          <option value="se">SERGIPE</option>
+          <option value="to">TOCANTINS</option>
+        </select>
+        <select
+          disabled
+          class="seletor-municipio"
+          default=""
+          name="municipio"
+          id="municipio"
+        >
+          <option value="">Escolha o Município</option>
+        </select>
+        <button disabled class="carregar">Carregar</button>
+      </div>
+    </div>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="index.js"></script>
+  </body>
+</html>
