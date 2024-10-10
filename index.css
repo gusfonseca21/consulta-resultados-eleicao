@@ -2,11 +2,10 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
 }
 
 .painel {
-  height: 500px;
+  /* min-height: 500px; */
   width: 800px;
   background-color: #fff;
   border: 1px solid #000;
@@ -17,4 +16,26 @@ body {
   justify-content: space-around;
   align-items: center;
   padding: 1rem;
+  border-bottom: 1px solid #000;
+}
+
+table,
+td,
+th {
+  border: 1px solid #ddd;
+  text-align: center;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th,
+td {
+  padding: 15px;
+}
+
+.tabela {
+  display: none;
 }
