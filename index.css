@@ -1,3 +1,7 @@
+* {
+  font-family: "Montserrat", sans-serif;
+}
+
 body {
   display: flex;
   justify-content: center;
@@ -6,9 +10,11 @@ body {
 
 .painel {
   /* min-height: 500px; */
-  width: 800px;
+  /* min-width: 800px; */
   background-color: #fff;
-  border: 1px solid #000;
+  border: 1px solid #bbb;
+  border-radius: 10px;
+  overflow: hidden;
 }
 
 .seletores {
@@ -16,13 +22,18 @@ body {
   justify-content: space-around;
   align-items: center;
   padding: 1rem;
-  border-bottom: 1px solid #000;
+  /* border-bottom: 1px solid #bbb; */
+}
+
+select {
+  height: 2rem;
+  text-align: center;
+  font-weight: 500;
 }
 
 table,
 td,
 th {
-  border: 1px solid #ddd;
   text-align: center;
 }
 
@@ -33,9 +44,79 @@ table {
 
 th,
 td {
-  padding: 15px;
+  padding: 1rem 0.8rem 1rem 0.8rem;
+  font-weight: 500;
+  /* border-bottom: 1px solid #bbb; */
+}
+
+/* td:not(:last-child) {
+  border-right: 1px solid #bbb;
+} */
+
+td {
+  border: 1px solid #bbb;
 }
 
 .tabela {
   display: none;
+}
+
+.cabecalho-tabela {
+  background-color: #002084;
+}
+
+.cabecalho-tabela th {
+  font-weight: bolder;
+  color: #fff;
+}
+
+.erro {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #f00;
+  padding: 1rem;
+}
+
+.carregando {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #000;
+  padding: 1rem;
+}
+
+.nome-partido {
+  background-color: #d1d7e9;
+}
+
+.validade {
+  background-color: #ebeef5;
+}
+
+.situacao-numero-porcentagem {
+  background-color: #f9e8c3;
+  text-align: center;
+}
+
+.eleito {
+  position: relative;
+  z-index: 1;
+  font-weight: bolder;
+}
+
+.eleito::before {
+  content: "";
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  z-index: -1;
+  border-radius: 4px;
+  /* padding: 1rem; */
+}
+
+.vice {
+  background-color: #fcf3e0;
 }

@@ -1,0 +1,383 @@
+<style>
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .painel {
+    /* min-height: 500px; */
+    /* min-width: 800px; */
+    background-color: #fff;
+    border: 1px solid #000;
+  }
+
+  .seletores {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid #000;
+  }
+
+  table,
+  td,
+  th {
+    border: 1px solid #ddd;
+    text-align: center;
+  }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  th,
+  td {
+    padding: 0.5rem;
+  }
+
+  .tabela {
+    display: none;
+  }
+
+  .erro {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #f00;
+    padding: 1rem;
+  }
+
+  .carregando {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #000;
+    padding: 1rem;
+  }
+</style>
+<div class="painel">
+  <div class="seletores">
+    <select
+      class="seletor-candidatura"
+      default=""
+      name="candidatura"
+      id="candidatura"
+    >
+      <option value="">Escolha o tipo de candidatura</option>
+      <option value="c0011">PREFEITO</option>
+      <option value="c0013">VEREADOR</option>
+    </select>
+    <select
+      disabled
+      class="seletor-estado"
+      default=""
+      name="estado"
+      id="estado"
+    >
+      <option value="">Escolha o Estado</option>
+      <option value="ac">ACRE</option>
+      <option value="al">ALAGOAS</option>
+      <option value="ap">AMAPÁ</option>
+      <option value="am">AMAZONAS</option>
+      <option value="ba">BAHIA</option>
+      <option value="ce">CEARÁ</option>
+      <option value="es">ESPÍRITO SANTO</option>
+      <option value="go">GOIÁS</option>
+      <option value="ma">MARANHÃO</option>
+      <option value="mt">MATO GROSSO</option>
+      <option value="ms">MATO GROSSO DO SUL</option>
+      <option value="mg">MINAS GERAIS</option>
+      <option value="pa">PARÁ</option>
+      <option value="pb">PARAÍBA</option>
+      <option value="pr">PARANÁ</option>
+      <option value="pe">PERNAMBUCO</option>
+      <option value="pi">PIAUÍ</option>
+      <option value="rj">RIO DE JANEIRO</option>
+      <option value="rn">RIO GRANDE DO NORTE</option>
+      <option value="rs">RIO GRANDE DO SUL</option>
+      <option value="ro">RONDÔNIA</option>
+      <option value="rr">RORAIMA</option>
+      <option value="sc">SANTA CATARINA</option>
+      <option value="sp">SÃO PAULO</option>
+      <option value="se">SERGIPE</option>
+      <option value="to">TOCANTINS</option>
+    </select>
+    <select
+      disabled
+      class="seletor-municipio"
+      default=""
+      name="municipio"
+      id="municipio"
+    >
+      <option value="">Escolha o Município</option>
+    </select>
+    <button disabled class="carregar">Carregar</button>
+  </div>
+  <table class="tabela">
+    <tr class="cabecalho-tabela">
+      <th>Nome</th>
+      <th>Partido</th>
+      <th>Validade candidatura</th>
+      <th>Situação</th>
+      <th>Número de votos</th>
+      <th>Porcentagem de votação</th>
+      <th class="vice-linha">Vice</th>
+    </tr>
+  </table>
+</div>
+
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+  // --------->>>>>>> SELECIONDO OPÇÕES <<<<<------------
+  const painelEl = document.querySelector(".painel");
+  const seletorCandidaturaEl = document.querySelector(".seletor-candidatura");
+  const seletorEstadoEl = document.querySelector(".seletor-estado");
+  const seletorMunicipioEl = document.querySelector(".seletor-municipio");
+  const botaoCarregarEl = document.querySelector(".carregar");
+  const tituloColVice = document.querySelector(".vice-linha");
+  const tabelaEl = document.querySelector(".tabela");
+
+  let candidaturaSelecionada = "";
+  let estadoSelecionado = "";
+  let municipioSelecionado = "";
+
+  seletorCandidaturaEl.addEventListener("change", (value) => {
+    const valor = value.target.value;
+    if (!valor) {
+      seletorEstadoEl.disabled = true;
+      seletorMunicipioEl.disabled = true;
+      botaoCarregarEl.disabled = true;
+      limparOpcoes(seletorMunicipioEl);
+      candidaturaSelecionada = "";
+      seletorEstadoEl.value = "";
+    } else {
+      seletorEstadoEl.disabled = false;
+      candidaturaSelecionada = valor;
+    }
+  });
+
+  seletorEstadoEl.addEventListener("change", (value) => {
+    limparOpcoes(seletorMunicipioEl);
+    const valor = value.target.value;
+    if (!valor) {
+      seletorMunicipioEl.disabled = true;
+      botaoCarregarEl.disabled = true;
+      estadoSelecionado = "";
+    } else {
+      seletorMunicipioEl.disabled = false;
+      estadoSelecionado = valor;
+      retornaMunicipios(valor);
+    }
+  });
+
+  seletorMunicipioEl.addEventListener("change", (value) => {
+    const valor = value.target.value;
+    if (!valor) {
+      botaoCarregarEl.disabled = true;
+      municipioSelecionado = "";
+    } else {
+      botaoCarregarEl.disabled = false;
+      municipioSelecionado = valor;
+    }
+  });
+
+  function retornaMunicipios(siglaEstadoSelecionado) {
+    // Importando array com nome dos municípios e seu código do TSE
+    // eslint-disable-next-line no-undef
+    axios.get("./municipios_brasileiros_tse.json").then((resposta) => {
+      const arrayOpcoesMunicipios = resposta.data
+        .map((municipio) => {
+          if (municipio.uf.toLowerCase() === siglaEstadoSelecionado) {
+            const opcaoMunicipioEl = document.createElement("option");
+            let codigo_municipio = municipio.codigo_tse.toString();
+            if (codigo_municipio.length < 5) {
+              codigo_municipio = codigo_municipio.padStart(5, "0");
+            }
+            opcaoMunicipioEl.value = codigo_municipio;
+            opcaoMunicipioEl.textContent = municipio.nome_municipio;
+            return opcaoMunicipioEl;
+          }
+        })
+        .filter((opcaoMunicipioEl) => opcaoMunicipioEl);
+      arrayOpcoesMunicipios.forEach((opcao) => {
+        seletorMunicipioEl.appendChild(opcao);
+      });
+    });
+  }
+
+  function limparOpcoes(elementoASerLimpo) {
+    const opcoes = elementoASerLimpo.options;
+    // Remove todas as opções menos a primeira, que é a padrão
+    for (let i = opcoes.length - 1; i > 0; i--) {
+      elementoASerLimpo.remove(i);
+    }
+  }
+
+  // ------->>>>> CARREGANDO E MOSTRANDO DADOS NA TABELA <<<<<------
+  const ENDPOINT_BASE =
+    "https://resultados.tse.jus.br/oficial/ele2024/619/dados/{ESTADO}/{ESTADO_COD_MU}-{TIPO_CANDIDATURA}-e000619-u.json";
+
+  botaoCarregarEl.addEventListener("click", async () => {
+    try {
+      // Limpa tabela para mostrar os novos dados selecionados
+      limparTabela();
+
+      mostrarCarregando();
+
+      const endpointFinal = ENDPOINT_BASE.replace("{ESTADO}", estadoSelecionado)
+        .replace("{ESTADO_COD_MU}", estadoSelecionado + municipioSelecionado)
+        .replace("{TIPO_CANDIDATURA}", candidaturaSelecionada);
+
+      // c0011 = prefeito; c0013 = vereador
+      if (candidaturaSelecionada === "c0011") {
+        tituloColVice.style.display = "table-cell";
+      } else {
+        tituloColVice.style.display = "none";
+      }
+
+      // eslint-disable-next-line no-undef
+      const resultado = await axios.get(endpointFinal);
+
+      const dados = resultado.data;
+
+      // Agremiações são as junções de vários partidos. Contém um array com os partidos que fazem parte da agremiação, que contém um array com os candidados do partido
+      const agremiacoes = dados?.carg[0]?.agr;
+
+      for (const agr of agremiacoes) {
+        agr.par.forEach((partido) => {
+          const sigla_partido = partido.sg;
+          partido.cand.forEach((candidato) => {
+            const nome_candidato = formatarNome(candidato.nmu);
+
+            const linha = [
+              nome_candidato,
+              sigla_partido,
+              candidato.dvt,
+              candidato.st,
+              candidato.vap,
+              candidato.pvap + "%",
+            ];
+
+            // Se for prefeito, adicionar nome do vice
+            if (candidaturaSelecionada === "c0011") {
+              const nome_vice = formatarNome(candidato.vs[0].nmu);
+              linha.push(nome_vice);
+            }
+
+            const linhaTabelaEl = document.createElement("tr");
+
+            const dadosLinhaEl = linha.map((dadoColuna) => {
+              const colunaEl = document.createElement("td");
+              colunaEl.textContent = dadoColuna;
+              return colunaEl;
+            });
+
+            dadosLinhaEl.forEach((linhaEl) => {
+              linhaTabelaEl.appendChild(linhaEl);
+            });
+
+            tabelaEl.appendChild(linhaTabelaEl);
+          });
+        });
+      }
+      const linhasOrdenadas = ordernarTabela(tabelaEl.children);
+
+      limparTabela();
+
+      linhasOrdenadas.forEach((linha) => {
+        tabelaEl.appendChild(linha);
+      });
+
+      removerCarregando();
+
+      console.log("Está chegando aqui?");
+      tabelaEl.style.display = "table";
+    } catch (error) {
+      removerCarregando();
+      console.error("Erro ao fazer requisição dos dados: ", error);
+      mostrarErro();
+    }
+  });
+
+  function formatarNome(nome) {
+    return nome
+      .replaceAll(",", "")
+      .replace(";", "")
+      .replace("&#186", "")
+      .replaceAll("&#09", "");
+  }
+
+  function limparTabela() {
+    tabelaEl.style.display = "none";
+
+    // Lembrando que .forEach() não funciona com coleções de elementos HTML
+    const linhasEl = tabelaEl.children;
+    for (let i = linhasEl.length - 1; i > 0; i--) {
+      linhasEl[i].remove();
+    }
+
+    const erroElemento = document.querySelector(".erro");
+    if (erroElemento) {
+      erroElemento.remove();
+    }
+  }
+
+  function ordernarTabela(elementosLinhas) {
+    const linhasArray = Array.from(elementosLinhas);
+
+    // Remove o cabeçalho da tabela
+    linhasArray.shift();
+
+    linhasArray.sort((a, b) => {
+      const totalVotosA = Number(a.children[4].innerText);
+      const totalVotosB = Number(b.children[4].innerText);
+
+      return totalVotosB - totalVotosA;
+    });
+
+    // Formata os valores de votos com toLocaleString para exibição
+    linhasArray.forEach((linha) => {
+      const votosCell = linha.children[4];
+      const votosNumericos = Number(votosCell.innerText.replace(/\./g, "")); // Remove pontos de milhares
+      votosCell.textContent = votosNumericos.toLocaleString("pt-BR"); // Formata para o padrão brasileiro
+    });
+
+    return linhasArray;
+  }
+
+  function mostrarCarregando() {
+    const carregandoElemento = document.querySelector(".carregando");
+
+    if (carregandoElemento) {
+      carregandoElemento.remove();
+    }
+
+    const elementoDiv = document.createElement("div");
+    elementoDiv.className = "carregando";
+    elementoDiv.innerText = "Carregando...";
+    painelEl.appendChild(elementoDiv);
+  }
+
+  function removerCarregando() {
+    const carregandoElemento = document.querySelector(".carregando");
+
+    if (carregandoElemento) {
+      carregandoElemento.remove();
+    }
+  }
+
+  function mostrarErro() {
+    const erroElemento = document.querySelector(".erro");
+
+    if (erroElemento) {
+      erroElemento.remove();
+    }
+    const elementoDiv = document.createElement("div");
+    elementoDiv.className = "erro";
+    elementoDiv.innerText =
+      "Erro ao retornar dados da votação. Por favor tente novamente mais tarde.";
+    painelEl.appendChild(elementoDiv);
+  }
+</script>
