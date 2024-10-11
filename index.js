@@ -145,14 +145,11 @@ botaoCarregarEl.addEventListener("click", async () => {
             if (index === 2) {
               colunaEl.className = "validade";
             }
-            if (index === 3 || index === 4 || index === 5) {
-              colunaEl.className = "situacao-numero-porcentagem";
-              if (index === 3 && eleito) {
-                colunaEl.className = "situacao-numero-porcentagem eleito";
-              }
-              // if (index === 3 && !eleito) {
-              //   colunaEl.classList = "situacao-numero-porcentagem nao-eleito";
-              // }
+            if (index === 3 && eleito) {
+              colunaEl.className = "eleito";
+            }
+            if (index === 4 || index === 5) {
+              colunaEl.className = "numero-percentual";
             }
             if (index === 6) {
               colunaEl.className = "vice";
@@ -218,11 +215,20 @@ function ordernarTabela(elementosLinhas) {
   linhasArray.shift();
 
   linhasArray.sort((a, b) => {
-    const totalVotosA = Number(a.children[4].innerText);
-    const totalVotosB = Number(b.children[4].innerText);
+    const eleitoA = a.children[3].innerText.includes("Eleito") ? 1 : 0;
+    const eleitoB = b.children[3].innerText.includes("Eleito") ? 1 : 0;
 
-    return totalVotosB - totalVotosA;
+    if (eleitoA === eleitoB) {
+      const totalVotosA = Number(a.children[4].innerText);
+      const totalVotosB = Number(b.children[4].innerText);
+
+      return totalVotosB - totalVotosA;
+    }
+
+    return eleitoB - eleitoA;
   });
+
+  console.log("linhasArray", linhasArray);
 
   // Formata os valores de votos com toLocaleString para exibição
   linhasArray.forEach((linha) => {
